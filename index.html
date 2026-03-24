@@ -1,185 +1,147 @@
-<!DOCTYPE html>
+.<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéNexus | The Ultimate Hobby & Collector Hub</title>
+    <title>PokéNexus | Live Database & Pack Sim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
-        .card-gradient { background: linear-gradient(145deg, #1e293b, #0f172a); }
-        .hover-glow:hover { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); border-color: #3b82f6; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f1a; color: white; }
+        .holo-card { transition: all 0.3s ease; }
+        .holo-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .pack-gradient { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
     </style>
 </head>
-<body class="bg-[#0b0f1a] text-slate-200 antialiased">
+<body class="antialiased">
 
-    <nav class="sticky top-0 z-50 glass-nav border-b border-slate-800 p-4">
+    <nav class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 p-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <i data-lucide="layers" class="text-white w-5 h-5"></i>
+                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
                 </div>
-                <h1 class="text-xl font-extrabold tracking-tight text-white">PokéNexus</h1>
+                <h1 class="text-xl font-black tracking-tight">PokéNexus</h1>
             </div>
-            <div class="hidden md:flex space-x-8 text-sm font-semibold text-slate-400">
-                <a href="#" class="hover:text-white transition">Sets Database</a>
-                <a href="#" class="hover:text-white transition">Marketplace</a>
-                <a href="#" class="hover:text-white transition">Community</a>
-                <a href="#" class="hover:text-white transition">News</a>
+            
+            <div class="flex-1 max-w-md mx-8 hidden md:block">
+                <div class="relative">
+                    <input id="cardSearch" type="text" placeholder="Search any card (e.g. Gengar)..." 
+                           class="w-full bg-slate-900 border border-slate-700 rounded-full py-2 px-10 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-500"></i>
+                </div>
             </div>
+
             <div class="flex items-center space-x-4">
-                <button class="text-sm font-bold text-slate-300 hover:text-white">Log In</button>
-                <button class="bg-white text-black px-5 py-2 rounded-full font-bold text-sm hover:bg-blue-500 hover:text-white transition">Join Hub</button>
+                <button onclick="scrollToSim()" class="bg-blue-600 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider">Open Packs</button>
             </div>
         </div>
     </nav>
 
-    <header class="pt-20 pb-16 px-6 text-center">
-        <div class="max-w-3xl mx-auto">
-            <div class="inline-flex items-center space-x-2 bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full mb-8">
-                <span class="flex h-2 w-2 rounded-full bg-blue-500"></span>
-                <span class="text-xs font-bold text-slate-300 uppercase tracking-tighter">New Set: Stellar Crown Database Live</span>
-            </div>
-            <h2 class="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6">
-                Organize. Trade. <br/><span class="text-blue-500 text-glow">Connect.</span>
-            </h2>
-            <p class="text-slate-400 text-lg md:text-xl mb-10 leading-relaxed">
-                The all-in-one platform for Pokémon hobbyists. Track your collection, browse community listings, and stay updated on the latest TCG news.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <button class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition shadow-lg shadow-blue-900/20">
-                    Explore Database
-                </button>
-                <button class="bg-slate-800 border border-slate-700 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-slate-700 transition">
-                    View Marketplace
-                </button>
-            </div>
-        </div>
+    <header class="py-16 px-6 text-center border-b border-slate-800">
+        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">Real-Time Card <span class="text-blue-500">Database</span></h2>
+        <p class="text-slate-400 max-w-xl mx-auto mb-8">Pulling live data from the official TCG database. Search cards, check rarities, and test your luck.</p>
     </header>
 
-    <section class="max-w-7xl mx-auto py-20 px-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 border-l-4 border-blue-600 pl-6">
-            <div>
-                <h3 class="text-3xl font-extrabold text-white">Recent Listings</h3>
-                <p class="text-slate-500 mt-1">Direct community trades and verified member sales.</p>
+    <main class="max-w-7xl mx-auto py-12 px-6">
+        <div id="loadingStatus" class="text-center text-blue-400 font-bold mb-4 hidden">Searching Database...</div>
+        <div id="cardGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             </div>
-            <button class="mt-4 md:mt-0 flex items-center text-blue-400 font-bold hover:text-blue-300">
-                Post a Listing <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
+    </main>
+
+    <section id="simulator" class="bg-slate-900 py-20 border-y border-slate-800 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-3xl font-bold mb-2">Pack Opening Simulator</h3>
+            <p class="text-slate-500 mb-10">Try to pull a Secret Rare! Pulls 5 random cards from the latest sets.</p>
+            
+            <div id="packContainer" class="flex flex-wrap justify-center gap-4 min-h-[300px] mb-10">
+                <div class="w-48 h-64 bg-slate-800 rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-600">
+                    Empty Pack
+                </div>
+            </div>
+
+            <button onclick="openPack()" id="openBtn" class="pack-gradient px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition shadow-xl shadow-blue-500/20">
+                OPEN BOOSTER PACK
             </button>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="card-gradient border border-slate-800 rounded-3xl p-5 hover-glow transition group cursor-pointer">
-                <div class="aspect-square bg-slate-800 rounded-2xl mb-5 flex items-center justify-center relative overflow-hidden">
-                    <div class="absolute top-3 right-3 bg-blue-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider text-white">Near Mint</div>
-                    <i data-lucide="image" class="text-slate-700 w-12 h-12"></i>
-                </div>
-                <h4 class="font-bold text-white text-lg group-hover:text-blue-400 transition">Charizard ex #234</h4>
-                <p class="text-slate-500 text-sm mb-4">Set: Obsidian Flames</p>
-                <div class="flex items-center justify-between pt-4 border-t border-slate-800">
-                    <div class="flex items-center">
-                        <div class="w-6 h-6 bg-slate-600 rounded-full mr-2"></div>
-                        <span class="text-xs font-semibold text-slate-400">Ash_K77</span>
-                    </div>
-                    <span class="text-xs text-slate-500">2h ago</span>
-                </div>
-            </div>
-
-            <div class="card-gradient border border-slate-800 rounded-3xl p-5 hover-glow transition group cursor-pointer">
-                <div class="aspect-square bg-slate-800 rounded-2xl mb-5 flex items-center justify-center relative overflow-hidden">
-                    <div class="absolute top-3 right-3 bg-purple-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider text-white">PSA 10</div>
-                    <i data-lucide="image" class="text-slate-700 w-12 h-12"></i>
-                </div>
-                <h4 class="font-bold text-white text-lg group-hover:text-blue-400 transition">Mewtwo VSTAR</h4>
-                <p class="text-slate-500 text-sm mb-4">Set: Crown Zenith</p>
-                <div class="flex items-center justify-between pt-4 border-t border-slate-800">
-                    <div class="flex items-center">
-                        <div class="w-6 h-6 bg-slate-600 rounded-full mr-2"></div>
-                        <span class="text-xs font-semibold text-slate-400">PokeGrading</span>
-                    </div>
-                    <span class="text-xs text-slate-500">5h ago</span>
-                </div>
-            </div>
-
-            </div>
     </section>
 
-    <section class="bg-[#0f172a] py-24 border-y border-slate-800 px-6">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
-            
-            <div>
-                <div class="flex items-center space-x-3 mb-8">
-                    <i data-lucide="newspaper" class="text-blue-500"></i>
-                    <h3 class="text-2xl font-bold text-white">Hobby News</h3>
-                </div>
-                <div class="space-y-6">
-                    <article class="flex gap-4 p-4 rounded-2xl hover:bg-slate-800/50 transition cursor-pointer">
-                        <div class="w-24 h-24 bg-slate-800 rounded-xl flex-shrink-0"></div>
-                        <div>
-                            <span class="text-blue-500 text-xs font-bold uppercase tracking-widest">Releases</span>
-                            <h5 class="text-white font-bold mt-1">Official Stellar Crown Pull Rate Report Released</h5>
-                            <p class="text-slate-500 text-sm mt-2">Analysis of over 10,000 packs reveals surprising rarity shifts...</p>
-                        </div>
-                    </article>
-                    <article class="flex gap-4 p-4 rounded-2xl hover:bg-slate-800/50 transition cursor-pointer">
-                        <div class="w-24 h-24 bg-slate-800 rounded-xl flex-shrink-0"></div>
-                        <div>
-                            <span class="text-green-500 text-xs font-bold uppercase tracking-widest">Investing</span>
-                            <h5 class="text-white font-bold mt-1">Why Sun & Moon Era Booster Boxes are Trending</h5>
-                            <p class="text-slate-500 text-sm mt-2">Supply is drying up on major platforms for Team Up and Cosmic Eclipse.</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex items-center space-x-3 mb-8">
-                    <i data-lucide="message-square" class="text-blue-500"></i>
-                    <h3 class="text-2xl font-bold text-white">Top Discussions</h3>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-600 transition cursor-pointer">
-                        <h6 class="text-slate-200 font-semibold italic">"Just pulled my first chase card! What should I do next?"</h6>
-                        <div class="flex justify-between mt-4 items-center">
-                            <span class="text-xs text-slate-500">42 comments • posted in <b>General Discussion</b></span>
-                            <button class="text-blue-400 text-xs font-bold">Join Thread</button>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-600 transition cursor-pointer">
-                        <h6 class="text-slate-200 font-semibold italic">"Grading vs. Raw: What's the better long-term strategy?"</h6>
-                        <div class="flex justify-between mt-4 items-center">
-                            <span class="text-xs text-slate-500">128 comments • posted in <b>Investment Talk</b></span>
-                            <button class="text-blue-400 text-xs font-bold">Join Thread</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="max-w-7xl mx-auto py-24 px-6">
-        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-[3rem] p-12 text-center relative overflow-hidden">
-            <div class="relative z-10">
-                <h3 class="text-4xl font-extrabold text-white mb-6">Ready to organize your collection?</h3>
-                <p class="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">Build your digital binder, track set completion, and share your most valuable pulls with the community.</p>
-                <button class="bg-white text-blue-700 px-10 py-4 rounded-2xl font-black text-lg hover:bg-slate-100 transition">Get Started For Free</button>
-            </div>
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        </div>
-    </section>
-
-    <footer class="py-12 border-t border-slate-900 text-center text-slate-600 text-xs">
-        <p>© 2026 PokéNexus Hobby Platform. All rights reserved.</p>
-        <p class="mt-2">Disclaimer: This site is for hobbyist demonstration and is not affiliated with any official trading card company.</p>
+    <footer class="py-12 text-center text-slate-600 text-xs uppercase tracking-widest">
+        Powered by Pokémon TCG API • PokéNexus v2.0
     </footer>
 
     <script>
-        // Initialize Lucide Icons
+        // 1. DATA FETCHING (The Engine)
+        const API_URL = "https://api.pokemontcg.io/v2/cards";
+
+        async function fetchTrendingCards() {
+            try {
+                // Fetch first 10 cards from the newest set (SV)
+                const response = await fetch(`${API_URL}?q=set.series:Scarlet & Violet&pageSize=10`);
+                const result = await response.json();
+                displayCards(result.data);
+            } catch (error) {
+                console.error("Error fetching cards:", error);
+            }
+        }
+
+        function displayCards(cards) {
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = cards.map(card => `
+                <div class="holo-card bg-slate-800/50 border border-slate-700 rounded-2xl p-3 cursor-pointer">
+                    <img src="${card.images.small}" alt="${card.name}" class="rounded-lg mb-3 shadow-lg">
+                    <h4 class="font-bold text-sm truncate">${card.name}</h4>
+                    <p class="text-blue-400 text-[10px] font-bold uppercase">${card.rarity || 'Common'}</p>
+                </div>
+            `).join('');
+        }
+
+        // 2. SEARCH LOGIC
+        const searchInput = document.getElementById('cardSearch');
+        searchInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value;
+                document.getElementById('loadingStatus').classList.remove('hidden');
+                const response = await fetch(`${API_URL}?q=name:${query}*&pageSize=10`);
+                const result = await response.json();
+                displayCards(result.data);
+                document.getElementById('loadingStatus').classList.add('hidden');
+            }
+        });
+
+        // 3. PACK SIMULATOR LOGIC
+        async function openPack() {
+            const btn = document.getElementById('openBtn');
+            const container = document.getElementById('packContainer');
+            btn.innerText = "OPENING...";
+            btn.disabled = true;
+
+            try {
+                // Fetch 5 random cards from recent sets
+                const response = await fetch(`${API_URL}?pageSize=5&page=${Math.floor(Math.random() * 20) + 1}`);
+                const result = await response.json();
+                
+                container.innerHTML = result.data.map(card => `
+                    <div class="w-40 md:w-48 animate-bounce">
+                        <img src="${card.images.small}" class="rounded-lg shadow-2xl border-2 border-yellow-500/50">
+                    </div>
+                `).join('');
+            } catch (err) {
+                alert("Pack jam! Try again.");
+            }
+
+            btn.innerText = "OPEN ANOTHER PACK";
+            btn.disabled = false;
+        }
+
+        function scrollToSim() {
+            document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Start the app
         lucide.createIcons();
+        fetchTrendingCards();
     </script>
 </body>
 </html>

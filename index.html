@@ -1,147 +1,54 @@
-.<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéNexus | Live Database & Pack Sim</title>
+    <title>PokeMarket Global | 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f1a; color: white; }
-        .holo-card { transition: all 0.3s ease; }
-        .holo-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-        .pack-gradient { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
-    </style>
 </head>
-<body class="antialiased">
+<body class="bg-gray-900 text-white">
 
-    <nav class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 p-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
-                </div>
-                <h1 class="text-xl font-black tracking-tight">PokéNexus</h1>
-            </div>
-            
-            <div class="flex-1 max-w-md mx-8 hidden md:block">
-                <div class="relative">
-                    <input id="cardSearch" type="text" placeholder="Search any card (e.g. Gengar)..." 
-                           class="w-full bg-slate-900 border border-slate-700 rounded-full py-2 px-10 focus:ring-2 focus:ring-blue-500 outline-none">
-                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-500"></i>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <button onclick="scrollToSim()" class="bg-blue-600 px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider">Open Packs</button>
-            </div>
+    <nav class="p-6 border-b border-gray-800 flex justify-between items-center">
+        <h1 class="text-2xl font-black text-yellow-400">POKEMARKET</h1>
+        <div class="flex gap-2">
+            <input type="text" id="userInput" placeholder="Search cards/boxes..." 
+                   class="bg-gray-800 border border-gray-600 px-4 py-2 rounded-lg text-sm focus:outline-none focus:border-yellow-400">
+            <button onclick="runSearch()" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-bold hover:bg-yellow-400">
+                SEARCH
+            </button>
         </div>
     </nav>
 
-    <header class="py-16 px-6 text-center border-b border-slate-800">
-        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">Real-Time Card <span class="text-blue-500">Database</span></h2>
-        <p class="text-slate-400 max-w-xl mx-auto mb-8">Pulling live data from the official TCG database. Search cards, check rarities, and test your luck.</p>
-    </header>
+    <div id="card-grid" class="p-10 grid grid-cols-2 md:grid-cols-5 gap-6">
+        <p class="col-span-full text-gray-500 text-center">Enter a name and hit search to pull from ENG/JPN markets.</p>
+    </div>
 
-    <main class="max-w-7xl mx-auto py-12 px-6">
-        <div id="loadingStatus" class="text-center text-blue-400 font-bold mb-4 hidden">Searching Database...</div>
-        <div id="cardGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            </div>
-    </main>
-
-    <section id="simulator" class="bg-slate-900 py-20 border-y border-slate-800 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h3 class="text-3xl font-bold mb-2">Pack Opening Simulator</h3>
-            <p class="text-slate-500 mb-10">Try to pull a Secret Rare! Pulls 5 random cards from the latest sets.</p>
-            
-            <div id="packContainer" class="flex flex-wrap justify-center gap-4 min-h-[300px] mb-10">
-                <div class="w-48 h-64 bg-slate-800 rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-600">
-                    Empty Pack
-                </div>
-            </div>
-
-            <button onclick="openPack()" id="openBtn" class="pack-gradient px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition shadow-xl shadow-blue-500/20">
-                OPEN BOOSTER PACK
-            </button>
-        </div>
-    </section>
-
-    <footer class="py-12 text-center text-slate-600 text-xs uppercase tracking-widest">
-        Powered by Pokémon TCG API • PokéNexus v2.0
-    </footer>
+    <script src="api-market-engine.js"></script>
 
     <script>
-        // 1. DATA FETCHING (The Engine)
-        const API_URL = "https://api.pokemontcg.io/v2/cards";
+        // This function links the button to the API engine
+        async function runSearch() {
+            const query = document.getElementById('userInput').value;
+            if(!query) return alert("Type something first!");
 
-        async function fetchTrendingCards() {
-            try {
-                // Fetch first 10 cards from the newest set (SV)
-                const response = await fetch(`${API_URL}?q=set.series:Scarlet & Violet&pageSize=10`);
-                const result = await response.json();
-                displayCards(result.data);
-            } catch (error) {
-                console.error("Error fetching cards:", error);
+            // Call the function from your api-market-engine.js file
+            const results = await searchGlobalMarket(query);
+
+            if(results) {
+                const grid = document.getElementById('card-grid');
+                grid.innerHTML = ""; // Clear old results
+
+                // Display English results
+                results.cards.english.forEach(card => {
+                    grid.innerHTML += `
+                        <div class="bg-gray-800 p-2 rounded border border-gray-700">
+                            <img src="${card.image}/low.webp" class="w-full">
+                            <p class="text-[10px] mt-2 text-blue-400">ENGLISH</p>
+                            <h4 class="text-xs font-bold">${card.name}</h4>
+                        </div>
+                    `;
+                });
             }
         }
-
-        function displayCards(cards) {
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = cards.map(card => `
-                <div class="holo-card bg-slate-800/50 border border-slate-700 rounded-2xl p-3 cursor-pointer">
-                    <img src="${card.images.small}" alt="${card.name}" class="rounded-lg mb-3 shadow-lg">
-                    <h4 class="font-bold text-sm truncate">${card.name}</h4>
-                    <p class="text-blue-400 text-[10px] font-bold uppercase">${card.rarity || 'Common'}</p>
-                </div>
-            `).join('');
-        }
-
-        // 2. SEARCH LOGIC
-        const searchInput = document.getElementById('cardSearch');
-        searchInput.addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value;
-                document.getElementById('loadingStatus').classList.remove('hidden');
-                const response = await fetch(`${API_URL}?q=name:${query}*&pageSize=10`);
-                const result = await response.json();
-                displayCards(result.data);
-                document.getElementById('loadingStatus').classList.add('hidden');
-            }
-        });
-
-        // 3. PACK SIMULATOR LOGIC
-        async function openPack() {
-            const btn = document.getElementById('openBtn');
-            const container = document.getElementById('packContainer');
-            btn.innerText = "OPENING...";
-            btn.disabled = true;
-
-            try {
-                // Fetch 5 random cards from recent sets
-                const response = await fetch(`${API_URL}?pageSize=5&page=${Math.floor(Math.random() * 20) + 1}`);
-                const result = await response.json();
-                
-                container.innerHTML = result.data.map(card => `
-                    <div class="w-40 md:w-48 animate-bounce">
-                        <img src="${card.images.small}" class="rounded-lg shadow-2xl border-2 border-yellow-500/50">
-                    </div>
-                `).join('');
-            } catch (err) {
-                alert("Pack jam! Try again.");
-            }
-
-            btn.innerText = "OPEN ANOTHER PACK";
-            btn.disabled = false;
-        }
-
-        function scrollToSim() {
-            document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Start the app
-        lucide.createIcons();
-        fetchTrendingCards();
     </script>
 </body>
 </html>

@@ -2,51 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PokeMarket Global | 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeMarket Global | Engine v1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card-shadow { box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .jp-gradient { background: linear-gradient(135deg, #ff4b2b, #ff416c); }
+        .en-gradient { background: linear-gradient(135deg, #1e3c72, #2a5298); }
+    </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-[#0f172a] text-slate-200 min-h-screen">
 
-    <nav class="p-6 border-b border-gray-800 flex justify-between items-center">
-        <h1 class="text-2xl font-black text-yellow-400">POKEMARKET</h1>
-        <div class="flex gap-2">
-            <input type="text" id="userInput" placeholder="Search cards/boxes..." 
-                   class="bg-gray-800 border border-gray-600 px-4 py-2 rounded-lg text-sm focus:outline-none focus:border-yellow-400">
-            <button onclick="runSearch()" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-bold hover:bg-yellow-400">
-                SEARCH
-            </button>
+    <header class="border-b border-slate-800 bg-[#1e293b] p-6 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-3xl font-black text-yellow-400 tracking-tighter">POKEMARKET <span class="text-white text-xs font-light tracking-widest uppercase ml-2">Global TCG Hub</span></h1>
+            
+            <div class="flex w-full md:w-auto bg-slate-900 rounded-full border border-slate-700 p-1">
+                <input type="text" id="searchBox" placeholder="Search any Pokemon (e.g. Rayquaza)..." 
+                       class="bg-transparent px-6 py-2 w-full md:w-80 outline-none text-sm">
+                <button onclick="executeSearch()" class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-8 py-2 rounded-full transition-all">
+                    SEARCH
+                </button>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div id="card-grid" class="p-10 grid grid-cols-2 md:grid-cols-5 gap-6">
-        <p class="col-span-full text-gray-500 text-center">Enter a name and hit search to pull from ENG/JPN markets.</p>
-    </div>
+    <main class="max-w-7xl mx-auto p-8">
+        <div id="loading-state" class="hidden text-center py-20">
+            <div class="animate-spin inline-block w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mb-4"></div>
+            <p class="text-slate-400 italic">Accessing International Databases...</p>
+        </div>
 
-    <script src="api-market-engine.js"></script>
+        <div id="results-area">
+            <h2 id="result-count" class="text-xl font-bold mb-8 text-slate-400">Search for a Pokemon to see English & Japanese listings.</h2>
+            <div id="display-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                </div>
+        </div>
+    </main>
 
     <script>
-        // This function links the button to the API engine
-        async function runSearch() {
-            const query = document.getElementById('userInput').value;
-            if(!query) return alert("Type something first!");
+        async function executeSearch() {
+            const query = document.getElementById('searchBox').value;
+            const grid = document.getElementById('display-grid');
+            const loader = document.getElementById('loading-state');
+            const countText = document.getElementById('result-count');
 
-            // Call the function from your api-market-engine.js file
-            const results = await searchGlobalMarket(query);
+            if (!query) return alert("Please enter a name!");
 
-            if(results) {
-                const grid = document.getElementById('card-grid');
-                grid.innerHTML = ""; // Clear old results
+            // UI Reset
+            grid.innerHTML = "";
+            loader.classList.remove('hidden');
+            countText.innerText = `Searching for "${query}"...`;
 
-                // Display English results
-                results.cards.english.forEach(card => {
-                    grid.innerHTML += `
-                        <div class="bg-gray-800 p-2 rounded border border-gray-700">
-                            <img src="${card.image}/low.webp" class="w-full">
-                            <p class="text-[10px] mt-2 text-blue-400">ENGLISH</p>
-                            <h4 class="text-xs font-bold">${card.name}</h4>
+            try {
+                // Fetch English and Japanese Data simultaneously
+                const [enRes, jpRes] = await Promise.all([
+                    fetch(`https://api.tcgdex.net/v2/en/cards?name=${query}`),
+                    fetch(`https://api.tcgdex.net/v2/jp/cards?name=${query}`)
+                ]);
+
+                const enData = await enRes.json();
+                const jpData = await jpRes.json();
+
+                loader.classList.add('hidden');
+                
+                const allItems = [
+                    ...enData.slice(0, 10).map(c => ({...c, region: 'English', color: 'en-gradient'})),
+                    ...jpData.slice(0, 10).map(c => ({...c, region: 'Japanese', color: 'jp-gradient'}))
+                ];
+
+                if (allItems.length === 0) {
+                    countText.innerText = "No products found. Check spelling!";
+                    return;
+                }
+
+                countText.innerText = `Found ${allItems.length} global products for "${query}"`;
+
+                allItems.forEach(card => {
+                    const cardHTML = `
+                        <div class="bg-[#1e293b] rounded-2xl overflow-hidden card-shadow border border-slate-700 hover:border-yellow-500 transition-all group">
+                            <div class="relative aspect-[3/4] overflow-hidden bg-slate-800">
+                                <img src="${card.image}/low.webp" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
+                                     onerror="this.src='https://via.placeholder.com/300x420?text=No+Image+Found'">
+                                <div class="absolute top-3 left-3 ${card.color} text-[10px] font-black px-3 py-1 rounded-full shadow-lg">
+                                    ${card.region}
+                                </div>
+                            </div>
+                            <div class="p-5">
+                                <h3 class="font-bold text-sm leading-tight h-10 overflow-hidden line-clamp-2">${card.name}</h3>
+                                <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-tighter">${card.id}</p>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <div class="flex flex-col">
+                                        <span class="text-[9px] text-slate-500 uppercase">Market Price</span>
+                                        <span class="text-green-400 font-mono font-bold">$ --.--</span>
+                                    </div>
+                                    <button class="bg-slate-700 hover:bg-white hover:text-black text-[10px] font-bold px-3 py-2 rounded-lg transition-colors">
+                                        VIEW DATA
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `;
+                    grid.innerHTML += cardHTML;
                 });
+
+            } catch (err) {
+                loader.classList.add('hidden');
+                countText.innerText = "Error connecting to the Poke-Servers. Try again.";
+                console.error(err);
             }
         }
     </script>

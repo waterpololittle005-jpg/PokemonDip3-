@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeNexus | Pro-Build v2.0</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --nexus-blue: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        
+        /* Skeleton Animation for Professional Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Smooth Card Hover */
+        .card-nexus {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-nexus:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 sticky top-0 z-[100] flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black italic">N</div>
+            <span class="text-xl font-black tracking-tighter">POKENEXUS <span class="text-blue-600">PRO</span></span>
+        </div>
+        <div id="connection-indicator" class="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Network Ready
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto pt-24 pb-16 px-6 text-center">
+        <h1 class="text-6xl md:text-7xl font-black text-slate-900 tracking-tight mb-6">
+            Global TCG <span class="text-blue-600 italic">Engine.</span>
+        </h1>
+        <p class="text-lg text-slate-500 max-w-2xl mx-auto mb-12 font-medium">
+            Professional database access for English and Japanese card markets. 
+            Unified search results with real-time asset tracking.
+        </p>
+
+        <div class="max-w-2xl mx-auto relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div class="relative bg-white p-2 rounded-[1.8rem] shadow-2xl border border-slate-100 flex items-center">
+                <input type="text" id="proSearchInput" 
+                    placeholder="Analyze cards or sets (e.g. Rayquaza)..." 
+                    class="w-full py-4 px-6 text-lg font-semibold outline-none bg-transparent"
+                    onkeypress="if(event.key === 'Enter') NexusPro.run()">
+                <button onclick="NexusPro.run()" 
+                    class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
+                    ANALYZE
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-32">
+        <div id="stats-bar" class="hidden flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+            <div id="search-info" class="text-sm font-bold text-slate-400 uppercase tracking-widest"></div>
+            <div class="flex gap-4">
+                <div class="h-2 w-24 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="nexus-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            </div>
+
+        <div id="error-box" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+            <p class="text-slate-400 font-bold uppercase tracking-widest">Search failed or no data found.</p>
+        </div>
+    </main>
+
+    <script>
+        const NexusPro = {

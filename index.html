@@ -6,13 +6,12 @@
     <title>PokeNexus | Global TCG Intelligence</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .nexus-blue { color: #2563eb; }
-        .card-hover:hover { transform: translateY(-8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-8px); transition: all 0.3s ease; }
     </style>
 </head>
 <body class="text-slate-900">
@@ -20,56 +19,46 @@
     <nav class="bg-white border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="text-2xl font-black tracking-tighter nexus-blue">POKENEXUS</div>
         <div class="hidden md:flex gap-6 text-sm font-bold text-slate-500 uppercase tracking-widest">
-            <a href="#" class="hover:text-blue-600">Global Search</a>
-            <a href="#" class="hover:text-blue-600">Live Markets</a>
+            <a href="#" class="hover:text-blue-600">Market Search</a>
+            <a href="#" class="hover:text-blue-600">About Nexus</a>
         </div>
     </nav>
 
     <header class="max-w-5xl mx-auto text-center py-20 px-6">
         <h1 class="text-6xl font-black text-slate-900 mb-6 tracking-tight">
-            Every Card. <span class="nexus-blue">Every Box.</span>
+            The World's <span class="nexus-blue">Pokemon</span> Network.
         </h1>
         <p class="text-xl text-slate-500 mb-10 max-w-2xl mx-auto">
-            The definitive network for English and Japanese Pokemon products. 
-            Real-time data from 1996 to 2026.
+            Access every English and Japanese card from 1996 to 2026. 
+            One search. Global results.
         </p>
 
         <div class="relative max-w-2xl mx-auto shadow-2xl rounded-2xl overflow-hidden border-4 border-white">
-            <input type="text" id="mainSearch" placeholder="Search cards, sets, or booster boxes..." 
+            <input type="text" id="mainSearch" placeholder="Search a Pokémon (e.g. Charizard)..." 
                    class="w-full py-6 px-8 text-lg outline-none pr-36">
-            <button onclick="handleNexusSearch()" class="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-8 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg">
+            <button onclick="executeNexusSearch()" class="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-8 rounded-xl font-bold hover:bg-blue-700 transition-all">
                 SEARCH
             </button>
         </div>
     </header>
 
-    <section class="max-w-7xl mx-auto px-6 py-12">
+    <section class="max-w-7xl mx-auto px-6 mb-12">
         <div class="flex items-center gap-4 mb-8">
-            <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight">Trending <span class="nexus-blue">Now</span></h2>
+            <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Global Trends</h2>
             <div class="h-px flex-1 bg-slate-200"></div>
         </div>
-        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 card-hover">
-                <div class="text-3xl">📦</div>
-                <div>
-                    <p class="text-[10px] font-black text-blue-600 uppercase">Top Sealed</p>
-                    <p class="font-bold text-slate-800 text-lg">VSTAR Universe Box</p>
-                </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                <span class="text-2xl">📦</span>
+                <div><p class="text-[10px] font-bold text-blue-600 uppercase">Sealed</p><p class="font-bold">151 Japanese Box</p></div>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 card-hover">
-                <div class="text-3xl">🔥</div>
-                <div>
-                    <p class="text-[10px] font-black text-red-600 uppercase">Hottest Card</p>
-                    <p class="font-bold text-slate-800 text-lg">Mewtwo ex (SAR)</p>
-                </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                <span class="text-2xl">✨</span>
+                <div><p class="text-[10px] font-bold text-red-600 uppercase">Hottest</p><p class="font-bold">Shiny Treasure ex</p></div>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 card-hover">
-                <div class="text-3xl">📈</div>
-                <div>
-                    <p class="text-[10px] font-black text-green-600 uppercase">Market Spike</p>
-                    <p class="font-bold text-slate-800 text-lg">Base Set Booster</p>
-                </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                <span class="text-2xl">📉</span>
+                <div><p class="text-[10px] font-bold text-green-600 uppercase">Market</p><p class="font-bold">Base Set Values</p></div>
             </div>
         </div>
     </section>
@@ -77,67 +66,55 @@
     <main class="max-w-7xl mx-auto px-6 pb-20">
         <div id="loader" class="hidden text-center py-20">
             <div class="animate-spin h-10 w-10 border-4 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
-            <p class="mt-4 text-slate-400 font-bold uppercase text-xs tracking-widest">Accessing Network...</p>
+            <p class="mt-4 text-slate-400 font-bold uppercase text-xs">Connecting to Market...</p>
         </div>
+        
         <div id="results-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8"></div>
     </main>
 
     <script>
-        // Placeholder for your Supabase Keys
-        const SUPABASE_URL = 'YOUR_URL_HERE';
-        const SUPABASE_KEY = 'YOUR_KEY_HERE';
-        const nexusClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const API_BASE = "https://api.tcgdex.net/v2";
 
-        async function handleNexusSearch() {
+        async function executeNexusSearch() {
             const query = document.getElementById('mainSearch').value;
             const grid = document.getElementById('results-grid');
             const loader = document.getElementById('loader');
 
-            if (!query) return;
+            if (!query) {
+                alert("Please type a Pokemon name first!");
+                return;
+            }
+
+            // Reset UI
             grid.innerHTML = "";
             loader.classList.remove('hidden');
 
             try {
+                // Get English and Japanese results at the same time
                 const [enRes, jpRes] = await Promise.all([
-                    fetch(`https://api.tcgdex.net/v2/en/cards?name=${query}`),
-                    fetch(`https://api.tcgdex.net/v2/jp/cards?name=${query}`)
+                    fetch(`${API_BASE}/en/cards?name=${query}`),
+                    fetch(`${API_BASE}/jp/cards?name=${query}`)
                 ]);
 
                 const enData = await enRes.json();
                 const jpData = await jpRes.json();
+
                 loader.classList.add('hidden');
 
-                const results = [
+                // Combine the top 10 results from each
+                const combined = [
                     ...enData.slice(0, 10).map(c => ({...c, lang: 'ENG'})),
                     ...jpData.slice(0, 10).map(c => ({...c, lang: 'JPN'}))
                 ];
 
-                results.forEach(item => {
+                if (combined.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center py-20 text-slate-400">No cards found for "${query}".</p>`;
+                    return;
+                }
+
+                // Draw the cards on the screen
+                combined.forEach(card => {
                     grid.innerHTML += `
-                        <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden card-hover shadow-sm hover:shadow-xl">
+                        <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden card-hover shadow-sm">
                             <div class="relative bg-slate-50 p-6">
-                                <img src="${item.image}/low.webp" class="w-full h-52 object-contain mx-auto shadow-md rounded-lg">
-                                <span class="absolute top-4 left-4 ${item.lang === 'ENG' ? 'bg-blue-600' : 'bg-red-600'} text-white text-[9px] font-black px-3 py-1 rounded-full uppercase">
-                                    ${item.lang}
-                                </span>
-                            </div>
-                            <div class="p-6">
-                                <h3 class="font-black text-sm text-slate-800 leading-tight mb-4">${item.name}</h3>
-                                <div class="flex justify-between items-center pt-4 border-t border-slate-50">
-                                    <div>
-                                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Live Price</p>
-                                        <p class="text-blue-600 font-black text-lg">$ --.--</p>
-                                    </div>
-                                    <button class="bg-slate-900 text-white text-[10px] font-black px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors uppercase">Data</button>
-                                </div>
-                            </div>
-                        </div>`;
-                });
-            } catch (err) {
-                loader.classList.add('hidden');
-                console.error("Network Error:", err);
-            }
-        }
-    </script>
-</body>
-</html>
+                                <img src="${card.image}/low.webp" class="w-full h-48 object-contain mx-auto" onerror

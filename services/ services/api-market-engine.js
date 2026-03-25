@@ -1,3 +1,5 @@
+console.log("✅ Market Engine is LOADED and ready!");
+alert("If you see this, the file is connected!");
 /**
  * POKEMARKET GLOBAL - API ENGINE (2026 Edition)
  * Handles: English Cards, Japanese Cards, and Sealed Products

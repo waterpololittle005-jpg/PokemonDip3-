@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokeNexus | Pro-Build v2.0</title>
-    
+    <title>PokeNexus | Pro-Build v2.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --nexus-blue: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        
-        /* Skeleton Animation for Professional Loading */
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -22,70 +17,136 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-
-        /* Smooth Card Hover */
-        .card-nexus {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .card-nexus:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
+        .nexus-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .nexus-card:hover { transform: translateY(-8px); shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
     </style>
 </head>
-<body class="text-slate-900">
+<body>
 
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 sticky top-0 z-[100] flex justify-between items-center">
+    <nav class="bg-white border-b border-slate-200 py-4 px-8 sticky top-0 z-50 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black italic">N</div>
-            <span class="text-xl font-black tracking-tighter">POKENEXUS <span class="text-blue-600">PRO</span></span>
+            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-black italic">N</div>
+            <span class="text-xl font-black tracking-tighter">POKENEXUS <span class="text-blue-600 uppercase text-xs">Pro Build</span></span>
         </div>
-        <div id="connection-indicator" class="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Network Ready
-        </div>
+        <div id="status" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">System Ready</div>
     </nav>
 
-    <header class="max-w-6xl mx-auto pt-24 pb-16 px-6 text-center">
-        <h1 class="text-6xl md:text-7xl font-black text-slate-900 tracking-tight mb-6">
-            Global TCG <span class="text-blue-600 italic">Engine.</span>
-        </h1>
-        <p class="text-lg text-slate-500 max-w-2xl mx-auto mb-12 font-medium">
-            Professional database access for English and Japanese card markets. 
-            Unified search results with real-time asset tracking.
-        </p>
+    <header class="max-w-4xl mx-auto text-center py-20 px-6">
+        <h1 class="text-6xl font-black text-slate-900 mb-6 tracking-tight text-balance">The Global <span class="text-blue-600">Product</span> Engine.</h1>
+        <p class="text-slate-500 mb-10 text-lg">Scanning every English and Japanese card & sealed box in existence.</p>
 
-        <div class="max-w-2xl mx-auto relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            <div class="relative bg-white p-2 rounded-[1.8rem] shadow-2xl border border-slate-100 flex items-center">
-                <input type="text" id="proSearchInput" 
-                    placeholder="Analyze cards or sets (e.g. Rayquaza)..." 
-                    class="w-full py-4 px-6 text-lg font-semibold outline-none bg-transparent"
-                    onkeypress="if(event.key === 'Enter') NexusPro.run()">
-                <button onclick="NexusPro.run()" 
-                    class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
-                    ANALYZE
-                </button>
-            </div>
+        <div class="relative max-w-2xl mx-auto shadow-2xl rounded-3xl overflow-hidden border border-slate-100 bg-white p-2">
+            <input type="text" id="nexusInput" placeholder="Search (e.g. VSTAR Universe, Evolving Skies, Gengar)..." 
+                   class="w-full py-4 px-6 outline-none text-lg font-medium">
+            <button onclick="NexusTerminal.init()" class="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-8 rounded-2xl font-bold hover:bg-blue-700 transition-all">
+                ANALYZE
+            </button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 pb-32">
-        <div id="stats-bar" class="hidden flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
-            <div id="search-info" class="text-sm font-bold text-slate-400 uppercase tracking-widest"></div>
-            <div class="flex gap-4">
-                <div class="h-2 w-24 bg-slate-200 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-500"></div>
-                </div>
-            </div>
-        </div>
-
+    <main class="max-w-7xl mx-auto px-6 pb-24">
         <div id="nexus-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
             </div>
-
-        <div id="error-box" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-            <p class="text-slate-400 font-bold uppercase tracking-widest">Search failed or no data found.</p>
-        </div>
     </main>
 
     <script>
-        const NexusPro = {
+        // --- THE NEXUS TERMINAL ENGINE ---
+        // This is the "Big Code" that manages all products
+        const NexusTerminal = {
+            API: "https://api.tcgdex.net/v2",
+
+            async init() {
+                const query = document.getElementById('nexusInput').value;
+                const grid = document.getElementById('nexus-grid');
+                const status = document.getElementById('status');
+
+                if (!query) return;
+
+                // UI Loading State
+                status.innerText = "🔍 SCANNING GLOBAL NETWORK...";
+                status.classList.add('text-blue-600');
+                grid.innerHTML = this.drawSkeletons();
+
+                try {
+                    // Fetch Everything: EN Cards, JP Cards, and All Sets
+                    const [enCards, jpCards, allSets] = await Promise.all([
+                        fetch(`${this.API}/en/cards?name=${query}`).then(r => r.json()),
+                        fetch(`${this.API}/jp/cards?name=${query}`).then(r => r.json()),
+                        fetch(`${this.API}/en/sets`).then(r => r.json())
+                    ]);
+
+                    // Filter sets to find Sealed Boxes that match your search
+                    const matchedSets = allSets.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+
+                    // Combine everything
+                    const results = [
+                        ...matchedSets.map(s => ({ ...s, type: 'SEALED', lang: 'GLOBAL' })),
+                        ...enCards.slice(0, 10).map(c => ({ ...c, type: 'CARD', lang: 'ENG' })),
+                        ...jpCards.slice(0, 10).map(c => ({ ...c, type: 'CARD', lang: 'JPN' }))
+                    ];
+
+                    this.render(results);
+                    status.innerText = `COMPLETED: ${results.length} ASSETS FOUND`;
+                } catch (err) {
+                    console.error(err);
+                    status.innerText = "NETWORK ERROR";
+                    grid.innerHTML = "<p class='col-span-full text-center py-20 text-red-500 font-bold'>CONNECTION INTERRUPTED</p>";
+                }
+            },
+
+            drawSkeletons() {
+                return Array(10).fill(0).map(() => `
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                        <div class="skeleton w-full h-40 rounded-xl mb-4"></div>
+                        <div class="skeleton h-4 w-3/4 rounded mb-2"></div>
+                        <div class="skeleton h-3 w-1/2 rounded"></div>
+                    </div>
+                `).join('');
+            },
+
+            render(items) {
+                const grid = document.getElementById('nexus-grid');
+                grid.innerHTML = "";
+
+                if (items.length === 0) {
+                    grid.innerHTML = "<p class='col-span-full text-center py-20 text-slate-400 font-bold uppercase tracking-widest'>No Assets Found</p>";
+                    return;
+                }
+
+                items.forEach(item => {
+                    const isSealed = item.type === 'SEALED';
+                    const badgeColor = item.lang === 'ENG' ? 'bg-blue-600' : (item.lang === 'JPN' ? 'bg-red-600' : 'bg-amber-500');
+                    
+                    grid.innerHTML += `
+                        <div class="nexus-card bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl">
+                            <div class="relative bg-slate-50 p-6 flex items-center justify-center min-h-[200px]">
+                                <img src="${item.image}/${isSealed ? 'logo.webp' : 'low.webp'}" class="max-w-full h-auto drop-shadow-xl" onerror="this.src='https://via.placeholder.com/200x280?text=Scan+Pending'">
+                                <span class="absolute top-4 left-4 ${badgeColor} text-white text-[8px] font-black px-3 py-1 rounded-full uppercase">
+                                    ${item.lang}
+                                </span>
+                                <span class="absolute top-4 right-4 bg-white/80 backdrop-blur text-slate-900 text-[8px] font-bold px-2 py-1 rounded border border-slate-200">
+                                    ${item.type}
+                                </span>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="font-bold text-sm text-slate-800 leading-tight mb-4 truncate">${item.name}</h3>
+                                <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+                                    <div>
+                                        <p class="text-[8px] text-slate-400 font-bold uppercase">Nexus Index</p>
+                                        <p class="text-blue-600 font-black text-lg leading-none mt-1">$ --.--</p>
+                                    </div>
+                                    <button class="bg-slate-900 text-white p-2 rounded-xl hover:bg-blue-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        };
+    </script>
+</body>
+</html>

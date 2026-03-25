@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PRO BUILD TEST</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-10">
+
+    <div class="max-w-2xl mx-auto bg-blue-600 p-10 rounded-3xl shadow-2xl text-center">
+        <h1 class="text-4xl font-black mb-4">NEXUS PRO ENGINE</h1>
+        <p class="mb-8 opacity-80">If you see this BLUE BOX, the code is working.</p>
+        
+        <input type="text" id="testInput" placeholder="Search..." class="w-full p-4 rounded-xl text-black mb-4">
+        <button onclick="runTest()" class="bg-black w-full py-4 rounded-xl font-bold">RUN SYSTEM SCAN</button>
+        
+        <div id="test-results" class="mt-10 grid grid-cols-1 gap-4"></div>
+    </div>
+
+    <script>
+        async function runTest() {
+            const val = document.getElementById('testInput').value;
+            const resDiv = document.getElementById('test-results');
+            resDiv.innerHTML = "<p class='animate-pulse'>SCANNING GLOBAL DATABASE...</p>";
+            
+            try {
+                const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${val}`);
+                const data = await res.json();
+                
+                resDiv.innerHTML = "";
+                data.slice(0, 5).forEach(card => {
+                    resDiv.innerHTML += `<div class="bg-white/10 p-4 rounded-xl border border-white/20 text-left">
+                        <p class="font-bold">${card.name}</p>
+                        <p class="text-xs opacity-50">${card.id}</p>
+                    </div>`;
+                });
+            } catch (e) {
+                resDiv.innerHTML = "ERROR CONNECTING";
+            }
+        }
+    </script>
+</body>
+</html>
